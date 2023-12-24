@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import * as http from 'http';
-import { joinRoomHandler, sendSignalToUserInMeeting } from './enentHandlers/roomsHandler';
+import { disconnetUser, joinRoomHandler, sendSignalToNewUser, sendSignalToUserInMeeting } from './enentHandlers/roomsHandler';
 
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
@@ -16,12 +16,21 @@ wss.on('connection', (ws: WebSocket) => {
           joinRoomHandler(data, ws);
           break;
         case "send-signal":
-          sendSignalToUserInMeeting(data)
+          sendSignalToUserInMeeting(data);
           break;
+        case "send-signal-to-new-user":
+          sendSignalToNewUser(data);
+          break;
+        case "disconnect-user":
+          disconnetUser(data);
+          break;
+        case "default":
+          console.log(event);
     }
   });
 
   ws.on('close', () => {
+    disconnetUser(JSON.stringify(ws))
     console.log('Client disconnected');
   });
 });
