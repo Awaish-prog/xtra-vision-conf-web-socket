@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import * as http from 'http';
-import { disconnetUser, joinRoomHandler, sendSignalToNewUser, sendSignalToUserInMeeting } from './enentHandlers/roomsHandler';
+import { disconnetUser, joinRoomHandler, sendSignalToNewUser, sendSignalToUserInMeeting, sendTimerToAll } from './enentHandlers/roomsHandler';
 
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
@@ -23,6 +23,9 @@ wss.on('connection', (ws: WebSocket) => {
           break;
         case "disconnect-user":
           disconnetUser(data);
+          break;
+        case "send-timer":
+          sendTimerToAll(data);
           break;
         default:
           console.log(event);

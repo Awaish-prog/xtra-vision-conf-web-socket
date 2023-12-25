@@ -1,5 +1,5 @@
 import { socketToRoom, users, usersToSockets } from "../data/userAndSocketsData";
-import { JoinRoomData, SignalData } from "../types/userAndRoomTypes";
+import { JoinRoomData, SignalData, TimerData } from "../types/userAndRoomTypes";
 
 function joinRoomHandler(data: JoinRoomData, ws: any): void{
     if (users[data.roomId]) {
@@ -47,4 +47,11 @@ function disconnetUser(wsString: string){
     }
 }
 
-export { joinRoomHandler, sendSignalToUserInMeeting, sendSignalToNewUser, disconnetUser }
+function sendTimerToAll({ timer, roomId }: TimerData){
+    console.log(timer, roomId);
+    users[roomId].forEach((user: string) => {
+        usersToSockets[user].send(JSON.stringify({event: "get-timer", timer}))
+    })
+}
+
+export { joinRoomHandler, sendSignalToUserInMeeting, sendSignalToNewUser, disconnetUser, sendTimerToAll }

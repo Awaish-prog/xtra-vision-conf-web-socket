@@ -20,3 +20,8 @@ export type SignalData = {
     userId: string,
     signal: any
 }
+
+export type TimerData = {
+    timer: number,
+    roomId: string
+}
