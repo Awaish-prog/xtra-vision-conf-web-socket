@@ -1,7 +1,7 @@
-import { socketToRoom, users, usersToSockets } from "../data/userAndSocketsData";
-import { JoinRoomData, SignalData, TimerData } from "../types/userAndRoomTypes";
+import { socketToRoom, timers, users, usersToSockets } from "../data/userAndSocketsData";
+import { UserRoomData, SignalData, TimerData, ToggleData } from "../types/userAndRoomTypes";
 
-function joinRoomHandler(data: JoinRoomData, ws: any): void{
+function joinRoomHandler(data: UserRoomData, ws: any): void{
     if (users[data.roomId]) {
         const length = users[data.roomId].length;
         // if (length === 4) {
@@ -11,12 +11,14 @@ function joinRoomHandler(data: JoinRoomData, ws: any): void{
         users[data.roomId].push(data.userId);
     } else {
         users[data.roomId] = [data.userId];
+        timers[data.roomId] = -3
         console.log("Brand new...");
     }
     socketToRoom[data.userId] = data.roomId;
     usersToSockets[data.userId] = ws
     const usersInRoom = users[data.roomId].filter(id => id !== data.userId);
-    ws.send(JSON.stringify({event: "get-all-users", usersInRoom}));
+    const timerInit: number = timers[data.roomId]
+    ws.send(JSON.stringify({event: "get-all-users", usersInRoom, timerInit }));
 }
 
 function sendSignalToUserInMeeting(signalData: SignalData){
@@ -48,10 +50,26 @@ function disconnetUser(wsString: string){
 }
 
 function sendTimerToAll({ timer, roomId }: TimerData){
-    console.log(timer, roomId);
+    timers[roomId] = timer;
     users[roomId].forEach((user: string) => {
         usersToSockets[user].send(JSON.stringify({event: "get-timer", timer}))
     })
 }
 
-export { joinRoomHandler, sendSignalToUserInMeeting, sendSignalToNewUser, disconnetUser, sendTimerToAll }
+function turnMicOff({ userId, roomId, turnOn }: ToggleData){
+    users[roomId].forEach(user => {
+        if(user !== userId){
+            usersToSockets[user].send(JSON.stringify({event: "turn-off-mic", userId, turnOn}))
+        }
+    })
+}
+
+function turnCameraOff({ userId, roomId, turnOn }: ToggleData){
+    users[roomId].forEach(user => {
+        if(user !== userId){
+            usersToSockets[user].send(JSON.stringify({event: "turn-off-camera", userId, turnOn}))
+        }
+    })
+}
+
+export { joinRoomHandler, sendSignalToUserInMeeting, sendSignalToNewUser, disconnetUser, sendTimerToAll, turnMicOff, turnCameraOff }

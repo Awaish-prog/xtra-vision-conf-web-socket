@@ -10,7 +10,7 @@ export type UsersToSocket = {
     [key: string]: any
 }
 
-export type JoinRoomData = {
+export type UserRoomData = {
     userId: string,
     roomId: string
 }
@@ -24,4 +24,12 @@ export type SignalData = {
 export type TimerData = {
     timer: number,
     roomId: string
+}
+
+export type ToggleData = UserRoomData & {
+    turnOn: boolean
+}
+
+export type Timers = {
+    [key: string]: number
 }
