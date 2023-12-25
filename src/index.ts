@@ -24,7 +24,7 @@ wss.on('connection', (ws: WebSocket) => {
         case "disconnect-user":
           disconnetUser(data);
           break;
-        case "default":
+        default:
           console.log(event);
     }
   });

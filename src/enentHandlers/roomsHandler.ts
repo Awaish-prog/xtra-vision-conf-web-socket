@@ -11,6 +11,7 @@ function joinRoomHandler(data: JoinRoomData, ws: any): void{
         users[data.roomId].push(data.userId);
     } else {
         users[data.roomId] = [data.userId];
+        console.log("Brand new...");
     }
     socketToRoom[data.userId] = data.roomId;
     usersToSockets[data.userId] = ws
@@ -35,8 +36,12 @@ function disconnetUser(wsString: string){
                 room = room.filter(id => id !== key);
                 users[roomID] = room;
             }
+            users[roomID].forEach(user => {
+                usersToSockets[user].send(JSON.stringify({ event: "remove-user", userId: key }));
+            })
             delete socketToRoom[key]
             delete usersToSockets[key]
+            console.log(users);
             return
         }
     }
