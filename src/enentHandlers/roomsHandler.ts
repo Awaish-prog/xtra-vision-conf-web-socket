@@ -1,24 +1,22 @@
-import { socketToRoom, timers, users, usersToSockets } from "../data/userAndSocketsData";
+import { socketToRoom, users, usersToSockets } from "../data/userAndSocketsData";
 import { UserRoomData, SignalData, TimerData, ToggleData } from "../types/userAndRoomTypes";
 
 function joinRoomHandler(data: UserRoomData, ws: any): void{
     if (users[data.roomId]) {
         const length = users[data.roomId].length;
-        // if (length === 4) {
-        //     // socket.emit("room full");
-        //     return;
-        // }
+        if (length === 5) {
+            return;
+        }
         users[data.roomId].push(data.userId);
     } else {
         users[data.roomId] = [data.userId];
-        timers[data.roomId] = -3
-        console.log("Brand new...");
     }
+    console.log(data.roomId);
+    console.log(data.userId);
     socketToRoom[data.userId] = data.roomId;
     usersToSockets[data.userId] = ws
     const usersInRoom = users[data.roomId].filter(id => id !== data.userId);
-    const timerInit: number = timers[data.roomId]
-    ws.send(JSON.stringify({event: "get-all-users", usersInRoom, timerInit }));
+    ws.send(JSON.stringify({event: "get-all-users", usersInRoom }));
 }
 
 function sendSignalToUserInMeeting(signalData: SignalData){
@@ -50,7 +48,6 @@ function disconnetUser(wsString: string){
 }
 
 function sendTimerToAll({ timer, roomId }: TimerData){
-    timers[roomId] = timer;
     users[roomId].forEach((user: string) => {
         usersToSockets[user].send(JSON.stringify({event: "get-timer", timer}))
     })
@@ -59,7 +56,7 @@ function sendTimerToAll({ timer, roomId }: TimerData){
 function turnMicOff({ userId, roomId, turnOn }: ToggleData){
     users[roomId].forEach(user => {
         if(user !== userId){
-            usersToSockets[user].send(JSON.stringify({event: "turn-off-mic", userId, turnOn}))
+            usersToSockets[user].send(JSON.stringify({event: "turn-off-mic", userIdMicOff: userId, turnOnMic: turnOn}))
         }
     })
 }
@@ -67,7 +64,7 @@ function turnMicOff({ userId, roomId, turnOn }: ToggleData){
 function turnCameraOff({ userId, roomId, turnOn }: ToggleData){
     users[roomId].forEach(user => {
         if(user !== userId){
-            usersToSockets[user].send(JSON.stringify({event: "turn-off-camera", userId, turnOn}))
+            usersToSockets[user].send(JSON.stringify({event: "turn-off-camera", userIdVideoOff: userId, turnOnVideo: turnOn}))
         }
     })
 }

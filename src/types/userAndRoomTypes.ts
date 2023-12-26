@@ -29,7 +29,3 @@ export type TimerData = {
 export type ToggleData = UserRoomData & {
     turnOn: boolean
 }
-
-export type Timers = {
-    [key: string]: number
-}
