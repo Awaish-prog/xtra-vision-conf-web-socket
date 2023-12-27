@@ -1,18 +1,17 @@
-import { socketToRoom, users, usersToSockets } from "../data/userAndSocketsData";
-import { UserRoomData, SignalData, TimerData, ToggleData } from "../types/userAndRoomTypes";
+import { socketToRoom, userIdsToNames, users, usersToSockets } from "../data/userAndSocketsData";
+import { UserRoomData, SignalData, TimerData, ToggleData, UserNameData, RaiseHandData } from "../types/userAndRoomTypes";
 
 function joinRoomHandler(data: UserRoomData, ws: any): void{
     if (users[data.roomId]) {
         const length = users[data.roomId].length;
         if (length === 5) {
+            ws.send(JSON.stringify({event: "room-is-full" }));
             return;
         }
         users[data.roomId].push(data.userId);
     } else {
         users[data.roomId] = [data.userId];
     }
-    console.log(data.roomId);
-    console.log(data.userId);
     socketToRoom[data.userId] = data.roomId;
     usersToSockets[data.userId] = ws
     const usersInRoom = users[data.roomId].filter(id => id !== data.userId);
@@ -41,7 +40,7 @@ function disconnetUser(wsString: string){
             })
             delete socketToRoom[key]
             delete usersToSockets[key]
-            console.log(users);
+            delete userIdsToNames[key]
             return
         }
     }
@@ -69,4 +68,21 @@ function turnCameraOff({ userId, roomId, turnOn }: ToggleData){
     })
 }
 
-export { joinRoomHandler, sendSignalToUserInMeeting, sendSignalToNewUser, disconnetUser, sendTimerToAll, turnMicOff, turnCameraOff }
+function enterName({ userId, userName }: UserNameData, ws: any){
+    userIdsToNames[userId] = userName;
+    ws.send((JSON.stringify({event: "get-user-name", userId, userName})))
+}
+
+function getUserNames(ws: any){
+    ws.send(JSON.stringify({event: "get-user-names", userIdsToNames}));
+}
+
+function raiseHand({ userId, hostId }: RaiseHandData){
+    usersToSockets[hostId].send(JSON.stringify({event: "raise-hand", data: {userId}}));
+}
+
+function putDown({ userId, hostId }: RaiseHandData){
+    usersToSockets[hostId].send(JSON.stringify({event: "put-down", data: {userId}}));
+}
+
+export { joinRoomHandler, sendSignalToUserInMeeting, sendSignalToNewUser, disconnetUser, sendTimerToAll, turnMicOff, turnCameraOff, enterName, getUserNames, raiseHand, putDown }

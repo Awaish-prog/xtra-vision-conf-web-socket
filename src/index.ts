@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import * as http from 'http';
-import { disconnetUser, joinRoomHandler, sendSignalToNewUser, sendSignalToUserInMeeting, sendTimerToAll, turnCameraOff, turnMicOff } from './enentHandlers/roomsHandler';
+import { disconnetUser, enterName, getUserNames, joinRoomHandler, putDown, raiseHand, sendSignalToNewUser, sendSignalToUserInMeeting, sendTimerToAll, turnCameraOff, turnMicOff } from './enentHandlers/roomsHandler';
 
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
@@ -32,6 +32,18 @@ wss.on('connection', (ws: WebSocket) => {
           break;
         case "turn-mic-off":
           turnMicOff(data);
+          break;
+        case "enter-name":
+          enterName(data, ws);
+          break;
+        case "get-user-names":
+          getUserNames(ws);
+          break;
+        case "raise-hand":
+          raiseHand(data);
+          break;
+        case "put-down":
+          putDown(data);
           break;
         default:
           console.log(event);
