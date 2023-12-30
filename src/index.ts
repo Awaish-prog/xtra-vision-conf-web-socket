@@ -1,8 +1,8 @@
 import * as WebSocket from 'ws';
-import * as https from 'https';
+import * as http from 'http';
 import { disconnetUser, enterName, getUserNames, joinRoomHandler, putDown, raiseHand, sendSignalToNewUser, sendSignalToUserInMeeting, sendTimerToAll, turnCameraOff, turnMicOff } from './enentHandlers/roomsHandler';
 
-const server = https.createServer();
+const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws: WebSocket) => {
