@@ -5,7 +5,7 @@ import { disconnetUser, enterName, getUserNames, joinRoomHandler, putDown, raise
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
-wss.on('connection', (ws: WebSocket) => {
+wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
   console.log('Client connected');
 
   ws.on('message', (message: string) => {
