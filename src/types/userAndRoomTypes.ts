@@ -43,3 +43,10 @@ export type RaiseHandData = {
     userId: string,
     hostId: string
 }
+
+export type UsersToStreamStatus = {
+    [key: string] : {
+        videoOn: boolean,
+        audioOn: boolean
+    }
+}

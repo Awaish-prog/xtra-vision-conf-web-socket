@@ -1,4 +1,4 @@
-import { SocketToRoom, UserIdsToNames, Users, UsersToSocket } from "../types/userAndRoomTypes";
+import { SocketToRoom, UserIdsToNames, Users, UsersToSocket, UsersToStreamStatus } from "../types/userAndRoomTypes";
 
 const users: Users = {};
 
@@ -8,4 +8,6 @@ const usersToSockets: UsersToSocket = {};
 
 const userIdsToNames: UserIdsToNames = {};
 
-export { users, socketToRoom, usersToSockets, userIdsToNames };
+const usersToStreamStatus: UsersToStreamStatus = {};
+
+export { users, socketToRoom, usersToSockets, userIdsToNames, usersToStreamStatus };
