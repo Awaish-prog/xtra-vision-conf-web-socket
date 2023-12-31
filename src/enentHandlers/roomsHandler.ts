@@ -9,7 +9,7 @@ function joinRoomHandler(data: UserRoomData, ws: any): void{
                 console.log("Repeated...");
                 return;
             }
-            if (length === 5) {
+            if (length === 4) {
                 console.log("Room full...");
                 ws.send(JSON.stringify({event: "room-is-full" }));
                 return;
