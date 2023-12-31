@@ -6,9 +6,11 @@ function joinRoomHandler(data: UserRoomData, ws: any): void{
         if (users[data.roomId]) {
             const length = users[data.roomId].length;
             if(users[data.roomId].includes(data.userId)){
+                console.log("Repeated...");
                 return;
             }
             if (length === 5) {
+                console.log("Room full...");
                 ws.send(JSON.stringify({event: "room-is-full" }));
                 return;
             }
@@ -23,6 +25,7 @@ function joinRoomHandler(data: UserRoomData, ws: any): void{
             audioOn: true
         }
         const usersInRoom = users[data.roomId].filter(id => id !== data.userId);
+        console.log(users);
         ws.send(JSON.stringify({event: "get-all-users", usersInRoom, usersToStreamStatus }));
     }
     catch(e){
